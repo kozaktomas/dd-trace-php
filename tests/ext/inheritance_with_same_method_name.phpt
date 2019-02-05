@@ -21,24 +21,23 @@ class Bar extends Foo
         return 1337;
     }
 
-    public function FooDoStuff()
+    public function parentDoStuff()
     {
-        # Should return "42", not "1337"
+        # Should return "42"
         return parent::doStuff();
     }
 }
 
 $bar = new Bar;
 echo "Before tracing:\n";
-echo $bar->FooDoStuff() . "\n";
+echo $bar->parentDoStuff() . "\n";
 
 dd_trace('Foo', 'doStuff', function () {
     return call_user_func_array([$this, 'doStuff'], func_get_args());
 });
 
 echo "After tracing:\n";
-echo $bar->FooDoStuff() . "\n";
-
+echo $bar->parentDoStuff() . "\n";
 ?>
 --EXPECT--
 Before tracing:
