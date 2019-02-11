@@ -151,6 +151,7 @@ static PHP_MINFO_FUNCTION(ddtrace) {
     DISPLAY_INI_ENTRIES();
 }
 
+// @TODO If called class != trace class, don't trace? (no inheritance support)
 static PHP_FUNCTION(dd_trace) {
     PHP5_UNUSED(return_value_used, this_ptr, return_value_ptr);
     zval *function = NULL;

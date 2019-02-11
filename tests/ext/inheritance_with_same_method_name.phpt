@@ -42,8 +42,14 @@ echo $bar->myDoStuff() . "\n";
 
 dd_trace('Foo', 'doStuff', function () {
     var_dump(dd_trace_invoke_original());
+    var_dump(get_called_class());
     #return call_user_func_array([get_called_class(), 'doStuff'], func_get_args());
     return call_user_func_array([$this, 'doStuff'], func_get_args());
+});
+
+dd_trace('Bar', 'parentDoStuff', function () {
+    var_dump(get_called_class());
+    return call_user_func_array([$this, 'parentDoStuff'], func_get_args());
 });
 
 echo "After tracing:\n";
