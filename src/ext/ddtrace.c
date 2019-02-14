@@ -214,12 +214,18 @@ static PHP_FUNCTION(dd_trace) {
 static PHP_FUNCTION(dd_trace_invoke_original) {
     PHP5_UNUSED(return_value_used, this_ptr, return_value_ptr, ht);
     PHP7_UNUSED(execute_data);
+    //uint32_t arg_count;
+    //zval *arguments = ZEND_CALL_ARG(ex, 1);
 
     if (DDTRACE_G(disable)) {
         RETURN_BOOL(0);
     }
 
+    //default_dispatch(EX(prev_execute_data));
+
     RETURN_BOOL(1);
+    //arg_count = ZEND_CALL_NUM_ARGS(ex);
+    //RETURN_ZVAL(arguments, 1, 0);
 }
 
 // This function allows untracing a function.

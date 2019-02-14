@@ -8,7 +8,7 @@ https://github.com/drupal/drupal/blob/bc60c9298a6b1a09c22bea7f5d87916902c27024/i
 
 class Foo
 {
-    public function doStuff()
+    public function doStuff($foo, array $bar = [])
     {
         return 42;
     }
@@ -16,7 +16,7 @@ class Foo
 
 class Bar extends Foo
 {
-    public function doStuff()
+    public function doStuff($foo, array $bar = [])
     {
         return 1337;
     }
@@ -24,13 +24,13 @@ class Bar extends Foo
     public function parentDoStuff()
     {
         # Should return "42"
-        return parent::doStuff();
+        return parent::doStuff('foo', [1, 2, 3]);
     }
 
     public function myDoStuff()
     {
         # Should return "1337"
-        return $this->doStuff();
+        return $this->doStuff('bar', [4, 2]);
     }
 }
 
@@ -42,15 +42,15 @@ echo $bar->myDoStuff() . "\n";
 
 dd_trace('Foo', 'doStuff', function () {
     var_dump(dd_trace_invoke_original());
-    var_dump(get_called_class());
-    #return call_user_func_array([get_called_class(), 'doStuff'], func_get_args());
     return call_user_func_array([$this, 'doStuff'], func_get_args());
 });
 
+/*
 dd_trace('Bar', 'parentDoStuff', function () {
-    var_dump(get_called_class());
+    var_dump(dd_trace_invoke_original());
     return call_user_func_array([$this, 'parentDoStuff'], func_get_args());
 });
+*/
 
 echo "After tracing:\n";
 dd_trace_noop();
