@@ -34,6 +34,10 @@ class Bar extends Foo
     }
 }
 
+$foo = new Foo;
+echo "Base class:\n";
+echo $foo->doStuff('foo') . "\n";
+
 $bar = new Bar;
 echo "Before tracing:\n";
 dd_trace_noop();
@@ -41,7 +45,8 @@ echo $bar->parentDoStuff() . "\n";
 echo $bar->myDoStuff() . "\n";
 
 dd_trace('Foo', 'doStuff', function () {
-    var_dump(dd_trace_invoke_original());
+    //var_dump(dd_trace_invoke_original());
+    echo "**TRACED**\n";
     return call_user_func_array([$this, 'doStuff'], func_get_args());
 });
 
@@ -58,6 +63,8 @@ echo $bar->parentDoStuff() . "\n";
 echo $bar->myDoStuff() . "\n";
 ?>
 --EXPECT--
+Base class:
+42
 Before tracing:
 42
 1337
