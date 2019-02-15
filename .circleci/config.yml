@@ -97,7 +97,7 @@ aliases:
     run:
       name: export .env.circleci
       command: |
-        export $(cat .env.circleci)"
+        echo "export $(cat .env.circleci | xargs)" >> ~/.profile
 
   - &STEP_RUN_EXTENSION_TESTS
     run:
