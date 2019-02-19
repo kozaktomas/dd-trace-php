@@ -45,9 +45,9 @@ echo $bar->parentDoStuff() . "\n";
 echo $bar->myDoStuff() . "\n";
 
 dd_trace('Foo', 'doStuff', function () {
-    //var_dump(dd_trace_invoke_original());
     echo "**TRACED**\n";
-    return call_user_func_array([$this, 'doStuff'], func_get_args());
+    //return call_user_func_array([$this, 'doStuff'], func_get_args());
+    return dd_trace_invoke_original();
 });
 
 /*
@@ -69,5 +69,6 @@ Before tracing:
 42
 1337
 After tracing:
+**TRACED**
 42
 1337
