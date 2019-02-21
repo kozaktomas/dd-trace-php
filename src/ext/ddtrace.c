@@ -214,16 +214,16 @@ static PHP_FUNCTION(dd_trace_forward_call) {
     PHP5_UNUSED(return_value_used, this_ptr, return_value_ptr, ht);
     PHP7_UNUSED(execute_data);
     zval fname, retval;
-	zend_fcall_info fci;
-	zend_fcall_info_cache fcc;
+    zend_fcall_info fci;
+    zend_fcall_info_cache fcc;
 
     if (DDTRACE_G(disable)) {
         RETURN_BOOL(0);
     }
 
-    if (!DDTRACE_G(original_execute_data)/* || DDTRACE_G(forwarding_call)*/) {
+    if (!DDTRACE_G(original_execute_data) /* || DDTRACE_G(forwarding_call)*/) {
         zend_throw_exception_ex(spl_ce_LogicException, 0 TSRMLS_CC,
-                                        "Cannot use dd_trace_forward_call() outside of a tracing closure");
+                                "Cannot use dd_trace_forward_call() outside of a tracing closure");
         return;
     }
 
@@ -237,7 +237,7 @@ static PHP_FUNCTION(dd_trace_forward_call) {
     fci.object = Z_OBJ(DDTRACE_G(original_execute_data)->This);
     fci.no_separation = 1;
 
-    fcc.initialized = 1; // Removed in PHP 7.3
+    fcc.initialized = 1;  // Removed in PHP 7.3
     fcc.function_handler = DDTRACE_G(original_execute_data)->func;
     fcc.calling_scope = DDTRACE_G(original_execute_data)->func->common.scope;
     fcc.called_scope = DDTRACE_G(original_execute_data)->func->common.scope;
@@ -314,14 +314,9 @@ static PHP_FUNCTION(dd_trace_noop) {
     RETURN_BOOL(1);
 }
 
-static const zend_function_entry ddtrace_functions[] = {
-    PHP_FE(dd_trace, NULL)
-    PHP_FE(dd_trace_forward_call, NULL)
-    PHP_FE(dd_trace_reset, NULL)
-    PHP_FE(dd_trace_noop, NULL)
-    PHP_FE(dd_untrace, NULL)
-    ZEND_FE_END
-};
+static const zend_function_entry ddtrace_functions[] = {PHP_FE(dd_trace, NULL) PHP_FE(dd_trace_forward_call, NULL)
+                                                            PHP_FE(dd_trace_reset, NULL) PHP_FE(dd_trace_noop, NULL)
+                                                                PHP_FE(dd_untrace, NULL) ZEND_FE_END};
 
 zend_module_entry ddtrace_module_entry = {STANDARD_MODULE_HEADER,    PHP_DDTRACE_EXTNAME,    ddtrace_functions,
                                           PHP_MINIT(ddtrace),        PHP_MSHUTDOWN(ddtrace), PHP_RINIT(ddtrace),
