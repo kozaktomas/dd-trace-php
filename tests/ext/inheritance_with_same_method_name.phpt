@@ -42,7 +42,7 @@ echo $bar->myDoStuff() . "\n";
 
 dd_trace('Foo', 'doStuff', function () {
     echo "**TRACED**\n";
-    return dd_trace_invoke_original();
+    return dd_trace_forward_call();
 });
 
 echo "=== After tracing ===\n";
