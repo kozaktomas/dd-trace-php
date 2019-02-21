@@ -41,7 +41,7 @@ class CurlIntegration
 
             CurlIntegration::injectDistributedTracingHeaders($ch);
 
-            $result = curl_exec($ch);
+            $result = dd_trace_forward_call();
             if ($result === false && $span instanceof Span) {
                 $span->setRawError(curl_error($ch), 'curl error');
             }

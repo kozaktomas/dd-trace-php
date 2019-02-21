@@ -13,6 +13,26 @@ use DDTrace\Util\ArrayKVStore;
 use DDTrace\GlobalTracer;
 use DDTrace\Util\Versions;
 
+class PrivateCallbackRequest
+{
+    private function parseResponseHeaders($ch, $headers)
+    {
+        echo $headers;
+        return 42;
+    }
+
+    public function request()
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, CurlIntegrationTest::URL . '/status/200');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, __CLASS__ . '::parseResponseHeaders');
+        curl_exec($ch);
+        curl_close($ch);
+        return $ch;
+    }
+}
+
 final class CurlIntegrationTest extends IntegrationTestCase
 {
     const URL = 'http://httpbin_integration';
@@ -71,6 +91,22 @@ final class CurlIntegrationTest extends IntegrationTestCase
             $response = curl_exec($ch);
             $this->assertSame('', $response);
             curl_close($ch);
+        });
+
+        $this->assertSpans($traces, [
+            SpanAssertion::build('curl_exec', 'curl', 'http', 'http://httpbin_integration/status/200')
+                ->withExactTags([
+                    'http.url' => self::URL . '/status/200',
+                    'http.status_code' => '200',
+                ]),
+        ]);
+    }
+
+    public function testPrivateCallbackForResponseHeaders()
+    {
+        $traces = $this->isolateTracer(function () {
+            $foo = new PrivateCallbackRequest();
+            $foo->request();
         });
 
         $this->assertSpans($traces, [
