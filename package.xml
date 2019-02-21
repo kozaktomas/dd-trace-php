@@ -60,6 +60,7 @@
                     <file name="closure_accessing_outside_variables.phpt" role="test" />
                     <file name="closure_set_inside_object_methods.phpt" role="test" />
                     <file name="do_not_check_if_class_or_function_exists_by_default.phpt" role="test" />
+                    <file name="dd_trace_forward_call_error.phpt" role="test" />
                     <file name="dd_trace_forward_call_for_functions.phpt" role="test" />
                     <file name="dd_trace_forward_call_with_inheritance.phpt" role="test" />
                     <file name="enable_throw_exception_if_overridable_doesnt_exist.phpt" role="test" />
