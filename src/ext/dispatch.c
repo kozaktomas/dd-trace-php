@@ -140,6 +140,11 @@ static void execute_fcall(ddtrace_dispatch_t *dispatch, zval *this, zend_execute
     zend_create_closure(&closure, (zend_function *)zend_get_closure_method_def(&dispatch->callable),
                         executed_method_class, executed_method_class, this TSRMLS_CC);
 #endif
+
+    //fcc.function_handler = func;
+    //fcc.calling_scope = func->common.scope;
+    //fcc.called_scope = func->common.scope;
+    //fcc.object = Z_OBJ_P(this);
     if (zend_fcall_info_init(&closure, 0, &fci, &fcc, NULL, &error TSRMLS_CC) != SUCCESS) {
         if (DDTRACE_G(strict_mode)) {
             if (func->common.scope) {
@@ -159,11 +164,15 @@ static void execute_fcall(ddtrace_dispatch_t *dispatch, zval *this, zend_execute
     }
 
     ddtrace_setup_fcall(execute_data, &fci, return_value_ptr TSRMLS_CC);
+
+    // Move this to closure zval before zend_fcall_info_init()
     fcc.function_handler->common.function_name = func_name;
+
     prev_original_execute_data = DDTRACE_G(original_execute_data);
     DDTRACE_G(original_execute_data) = execute_data;
     zend_call_function(&fci, &fcc TSRMLS_CC);
     DDTRACE_G(original_execute_data) = prev_original_execute_data;
+
     zend_string_release(func_name);
 
 #if PHP_VERSION_ID < 70000
