@@ -220,10 +220,6 @@ static zend_always_inline zend_bool wrap_and_run(zend_execute_data *execute_data
 #if PHP_VERSION_ID < 50600
     zval *original_object = EX(object);
 #endif
-    zval *object = NULL;
-    const char *common_scope = NULL;
-    uint32_t common_scope_length = 0;
-
     zval *this = ddtrace_this(execute_data);
     DD_PRINTF("Loaded $this object ptr: %p", (void *)this);
 
