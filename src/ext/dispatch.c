@@ -165,8 +165,11 @@ static void execute_fcall(ddtrace_dispatch_t *dispatch, zval *this, zend_execute
 
     ddtrace_setup_fcall(execute_data, &fci, return_value_ptr TSRMLS_CC);
 
+    //fcc.function_handler = current_fbc;
     // Move this to closure zval before zend_fcall_info_init()
     fcc.function_handler->common.function_name = func_name;
+    fcc.called_scope = current_fbc->common.scope;
+    //fcc.object = Z_OBJ_P(this);
 
     prev_original_execute_data = DDTRACE_G(original_execute_data);
     DDTRACE_G(original_execute_data) = execute_data;
