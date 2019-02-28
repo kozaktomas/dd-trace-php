@@ -7,7 +7,6 @@ use DDTrace\Tag;
 use DDTrace\Type;
 use DDTrace\Util\Versions;
 use DDTrace\Util\ObjectKVStore;
-use DDTrace\Util\TryCatchFinally;
 use DDTrace\GlobalTracer;
 
 class MysqliIntegration
@@ -183,17 +182,12 @@ class MysqliIntegration
             MysqliIntegration::setConnectionInfo($span, $this);
             MysqliIntegration::storeQuery($this, $query);
 
-            return TryCatchFinally::executePublicMethod(
-                $scope,
-                $this,
-                'query',
-                $args,
-                function ($result) use ($query) {
-                    $host_info = MysqliIntegration::extractHostInfo($this);
-                    ObjectKVStore::put($result, 'host_info', $host_info);
-                    ObjectKVStore::put($result, 'query', $query);
-                }
-            );
+            $afterResult = function ($result) use ($query) {
+                $host_info = MysqliIntegration::extractHostInfo($this);
+                ObjectKVStore::put($result, 'host_info', $host_info);
+                ObjectKVStore::put($result, 'query', $query);
+            };
+            return include __DIR__ . '/../../try_catch_finally.php';
         });
 
         // mysqli_stmt mysqli::prepare ( string $query )
@@ -202,18 +196,12 @@ class MysqliIntegration
             /** @var \DDTrace\Span $span */
             $span = $scope->getSpan();
             MysqliIntegration::setConnectionInfo($span, $this);
-
-            return TryCatchFinally::executePublicMethod(
-                $scope,
-                $this,
-                'prepare',
-                [$query],
-                function ($statement) use ($query) {
-                    $host_info = MysqliIntegration::extractHostInfo($this);
-                    ObjectKVStore::put($statement, 'host_info', $host_info);
-                    MysqliIntegration::storeQuery($statement, $query);
-                }
-            );
+            $afterResult = function ($statement) use ($query) {
+                $host_info = MysqliIntegration::extractHostInfo($this);
+                ObjectKVStore::put($statement, 'host_info', $host_info);
+                MysqliIntegration::storeQuery($statement, $query);
+            };
+            return include __DIR__ . '/../../try_catch_finally.php';
         });
 
         // bool mysqli::commit ([ int $flags [, string $name ]] )
@@ -229,30 +217,25 @@ class MysqliIntegration
                 $span->setTag('db.transaction_name', $args[1]);
             }
 
-            return TryCatchFinally::executePublicMethod($scope, $this, 'commit', $args);
+            return include __DIR__ . '/../../try_catch_finally.php';
         });
 
         // bool mysqli_stmt::execute ( void )
         dd_trace('mysqli_stmt', 'execute', function () {
             $resource = MysqliIntegration::retrieveQuery($this, 'mysqli_stmt.execute');
             $scope = MysqliIntegration::initScope('mysqli_stmt.execute', $resource);
-            return TryCatchFinally::executePublicMethod($scope, $this, 'execute', []);
+            return include __DIR__ . '/../../try_catch_finally.php';
         });
 
         // bool mysqli_stmt::execute ( void )
         dd_trace('mysqli_stmt', 'get_result', function () {
             $resource = MysqliIntegration::retrieveQuery($this, 'mysqli_stmt.get_result');
             $scope = MysqliIntegration::initScope('mysqli_stmt.get_result', $resource);
-            return TryCatchFinally::executePublicMethod(
-                $scope,
-                $this,
-                'get_result',
-                [],
-                function ($result) use ($resource) {
-                    ObjectKVStore::propagate($this, $result, 'host_info');
-                    ObjectKVStore::put($result, 'query', $resource);
-                }
-            );
+            $afterResult = function ($result) use ($resource) {
+                ObjectKVStore::propagate($this, $result, 'host_info');
+                ObjectKVStore::put($result, 'query', $resource);
+            };
+            return include __DIR__ . '/../../try_catch_finally.php';
         });
         return Integration::LOADED;
     }
