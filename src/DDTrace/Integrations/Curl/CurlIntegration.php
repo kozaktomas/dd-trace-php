@@ -67,7 +67,7 @@ class CurlIntegration
                 ArrayKVStore::putForResource($ch, Format::CURL_HTTP_HEADERS, $value);
             }
 
-            return curl_setopt($ch, $option, $value);
+            return dd_trace_forward_call();
         });
 
         dd_trace('curl_setopt_array', function ($ch, $options) use ($globalConfig) {
@@ -80,12 +80,12 @@ class CurlIntegration
                 ArrayKVStore::putForResource($ch, Format::CURL_HTTP_HEADERS, $options[CURLOPT_HTTPHEADER]);
             }
 
-            return curl_setopt_array($ch, $options);
+            return dd_trace_forward_call();
         });
 
         dd_trace('curl_close', function ($ch) use ($globalConfig) {
             ArrayKVStore::deleteResource($ch);
-            return curl_close($ch);
+            return dd_trace_forward_call();
         });
 
         return Integration::LOADED;

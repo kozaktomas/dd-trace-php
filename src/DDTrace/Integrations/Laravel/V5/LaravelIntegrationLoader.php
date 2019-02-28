@@ -35,10 +35,9 @@ class LaravelIntegrationLoader
 
         dd_trace('Illuminate\Foundation\Application', 'bind', function () use (&$kernelClass, $self) {
 
-            $args = func_get_args();
             /** @var Application $laravelApp */
             $laravelApp = $this;
-            $result = call_user_func_array([$this, 'bind'], $args);
+            $result = dd_trace_forward_call();
 
             $laravelApp['events']->listen(
                 'Illuminate\Routing\Events\RouteMatched',
@@ -93,8 +92,6 @@ class LaravelIntegrationLoader
 
         // Trace middleware
         dd_trace('Illuminate\Pipeline\Pipeline', 'then', function () {
-            $args = func_get_args();
-
             foreach ($this->pipes as $pipe) {
                 // Pipes can be passed both as class to the pipeline and as instances
                 if (is_string($pipe) || is_object($pipe)) {
@@ -125,7 +122,7 @@ class LaravelIntegrationLoader
                 }
             }
 
-            return call_user_func_array([$this, 'then'], $args);
+            return dd_trace_forward_call();
         });
 
         // Create a trace span for every template rendered
@@ -139,7 +136,7 @@ class LaravelIntegrationLoader
         dd_trace('Symfony\Component\HttpFoundation\Response', 'setStatusCode', function () use ($self) {
             $args = func_get_args();
             $self->rootScope->getSpan()->setTag(Tag::HTTP_STATUS_CODE, $args[0]);
-            return call_user_func_array([$this, 'setStatusCode'], $args);
+            return dd_trace_forward_call();
         });
     }
 

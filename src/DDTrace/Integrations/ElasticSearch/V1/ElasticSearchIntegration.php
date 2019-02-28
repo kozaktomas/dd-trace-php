@@ -142,7 +142,7 @@ class ElasticSearchIntegration
                 if ($this->getMethod() === 'GET' && $body = $this->getBody()) {
                     $span->setTag(Tag::ELASTICSEARCH_BODY, json_encode($this->getBody()));
                 }
-                $result = call_user_func_array([$this, 'performRequest'], $args);
+                $result = dd_trace_forward_call();
             } catch (\Exception $ex) {
                 $thrown = $ex;
                 if ($span instanceof Span) {
@@ -185,7 +185,7 @@ class ElasticSearchIntegration
             $thrown = null;
             $result = null;
             try {
-                $result = call_user_func_array([$this, $name], $args);
+                $result = dd_trace_forward_call();
             } catch (\Exception $ex) {
                 $thrown = $ex;
                 if ($span instanceof Span) {
@@ -234,7 +234,7 @@ class ElasticSearchIntegration
             $thrown = null;
             $result = null;
             try {
-                $result = call_user_func_array([$this, $name], $args);
+                $result = dd_trace_forward_call();
             } catch (\Exception $ex) {
                 $thrown = $ex;
                 if ($span instanceof Span) {
@@ -276,7 +276,7 @@ class ElasticSearchIntegration
             $thrown = null;
             $result = null;
             try {
-                $result = call_user_func_array([$this, $name], $args);
+                $result = dd_trace_forward_call();
             } catch (\Exception $ex) {
                 $thrown = $ex;
                 if ($span instanceof Span) {

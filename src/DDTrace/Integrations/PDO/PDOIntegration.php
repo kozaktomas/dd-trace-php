@@ -52,7 +52,7 @@ class PDOIntegration
             // PHP 5.4 compatible try-catch-finally
             $thrown = null;
             try {
-                call_user_func_array([$this, '__construct'], $args);
+                dd_trace_forward_call();
                 PDOIntegration::storeConnectionParams($this, $args);
                 PDOIntegration::detectError($span, $this);
             } catch (\Exception $e) {
@@ -81,7 +81,7 @@ class PDOIntegration
             $thrown = null;
             $result = null;
             try {
-                $result = $this->exec($statement);
+                $result = dd_trace_forward_call();
                 PDOIntegration::detectError($span, $this);
                 $span->setTag('db.rowcount', $result);
             } catch (\Exception $e) {
@@ -115,7 +115,7 @@ class PDOIntegration
             $thrown = null;
             $result = null;
             try {
-                $result =  call_user_func_array([$this, 'query'], $args);
+                $result = dd_trace_forward_call();
                 PDOIntegration::detectError($span, $this);
                 PDOIntegration::storeStatementFromConnection($this, $result);
                 try {
@@ -147,7 +147,7 @@ class PDOIntegration
             $thrown = null;
             $result = null;
             try {
-                $result = $this->commit();
+                $result = dd_trace_forward_call();
                 PDOIntegration::detectError($span, $this);
             } catch (\Exception $e) {
                 PDOIntegration::setErrorOnException($span, $e);
@@ -176,7 +176,7 @@ class PDOIntegration
             $thrown = null;
             $result = null;
             try {
-                $result = call_user_func_array([$this, 'prepare'], $args);
+                $result = dd_trace_forward_call();
                 PDOIntegration::storeStatementFromConnection($this, $result);
             } catch (\Exception $e) {
                 PDOIntegration::setErrorOnException($span, $e);
@@ -205,7 +205,7 @@ class PDOIntegration
             $thrown = null;
             $result = null;
             try {
-                $result = call_user_func_array([$this, 'execute'], $params);
+                $result = dd_trace_forward_call();
                 PDOIntegration::detectError($span, $this);
                 try {
                     $span->setTag('db.rowcount', $this->rowCount());
