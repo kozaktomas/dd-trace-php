@@ -170,6 +170,7 @@ static void execute_fcall(ddtrace_dispatch_t *dispatch, zval *this, zend_execute
     DDTRACE_G(original_execute_data) = prev_original_execute_data;
 
 #if PHP_VERSION_ID < 70000
+    //efree(func_name);
     if (fci.params) {
         efree(fci.params);
     }

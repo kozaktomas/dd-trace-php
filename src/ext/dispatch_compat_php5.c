@@ -1,6 +1,9 @@
 #include "php.h"
 #if PHP_VERSION_ID < 70000
 
+#include <Zend/zend_exceptions.h>
+#include <ext/spl/spl_exceptions.h>
+
 #include "ddtrace.h"
 #include "debug.h"
 #include "dispatch.h"
@@ -141,7 +144,49 @@ zend_bool ddtrace_dispatch_store(HashTable *lookup, ddtrace_dispatch_t *dispatch
                             sizeof(ddtrace_dispatch_t *), NULL) == SUCCESS;
 }
 
-void ddtrace_forward_call(zend_execute_data *execute_data, zval *return_value) {
-    //strcmp("dd_trace_callback", callback_name)
+void ddtrace_forward_call(zend_execute_data *execute_data, zval *return_value TSRMLS_DC) {
+    zval *retval;
+    zend_fcall_info fci = {0};
+    zend_fcall_info_cache fcc = {0};
+    zend_execute_data *prev_ex;
+    const char *callback_name;
+    zend_function *func;
+
+    prev_ex = !EX(prev_execute_data)->function_state.function->common.function_name ? EX(prev_execute_data)->prev_execute_data : EX(prev_execute_data);
+    callback_name = !prev_ex ? NULL : prev_ex->function_state.function->common.function_name;
+
+    if (!DDTRACE_G(original_execute_data)
+            || !callback_name
+            || 0 != strcmp("dd_trace_callback", callback_name)) {
+        zend_throw_exception_ex(spl_ce_LogicException, 0 TSRMLS_CC,
+                                "Cannot use dd_trace_forward_call() outside of a tracing closure");
+        return;
+    }
+
+    setup_fcal_name(execute_data, &fci, &retval TSRMLS_CC);
+
+    func = datadog_current_function(DDTRACE_G(original_execute_data));
+
+    fci.size = sizeof(fci);
+    ALLOC_ZVAL(fci.function_name);
+    INIT_PZVAL(fci.function_name);
+    ZVAL_STRING(fci.function_name, "foo_func", 1);
+    //ZVAL_STRING(fci.function_name, func->common.function_name, 1);
+    fci.object_ptr = DDTRACE_G(original_execute_data)->object;
+    fci.no_separation = 1;
+
+    fcc.initialized = 1;
+    fcc.function_handler = func;
+    fcc.calling_scope = func->common.scope;
+    fcc.called_scope = func->common.scope;
+    fcc.object_ptr = DDTRACE_G(original_execute_data)->object;
+
+    if (zend_call_function(&fci, &fcc TSRMLS_CC) == SUCCESS && fci.retval_ptr_ptr && *fci.retval_ptr_ptr) {
+        COPY_PZVAL_TO_ZVAL(*return_value, *fci.retval_ptr_ptr);
+    }
+
+    if (fci.params) {
+		efree(fci.params);
+	}
 }
 #endif  // PHP 5

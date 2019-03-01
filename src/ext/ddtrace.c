@@ -219,9 +219,9 @@ static PHP_FUNCTION(dd_trace_forward_call) {
     }
 
 #if PHP_VERSION_ID < 70000
-    ddtrace_forward_call(EG(current_execute_data), return_value);
+    ddtrace_forward_call(EG(current_execute_data), return_value TSRMLS_CC);
 #else
-    ddtrace_forward_call(execute_data, return_value);
+    ddtrace_forward_call(execute_data, return_value TSRMLS_CC);
 #endif
 }
 
