@@ -13,6 +13,7 @@ use DDTrace\Integrations\Lumen\LumenIntegration;
 use DDTrace\Integrations\Memcached\MemcachedIntegration;
 use DDTrace\Integrations\Mongo\MongoIntegration;
 use DDTrace\Integrations\Mysqli\MysqliIntegration;
+use DDTrace\Integrations\Nette\NetteIntegration;
 use DDTrace\Integrations\PDO\PDOIntegration;
 use DDTrace\Integrations\Predis\PredisIntegration;
 use DDTrace\Integrations\Slim\SlimIntegration;
@@ -52,6 +53,7 @@ class IntegrationsLoader
         MemcachedIntegration::NAME => '\DDTrace\Integrations\Memcached\MemcachedIntegration',
         MongoIntegration::NAME => '\DDTrace\Integrations\Mongo\MongoIntegration',
         MysqliIntegration::NAME => '\DDTrace\Integrations\Mysqli\MysqliIntegration',
+        NetteIntegration::NAME => '\DDTrace\Integrations\Nette\NetteIntegration',
         PDOIntegration::NAME => '\DDTrace\Integrations\PDO\PDOIntegration',
         PredisIntegration::NAME => '\DDTrace\Integrations\Predis\PredisIntegration',
         SlimIntegration::NAME => '\DDTrace\Integrations\Slim\SlimIntegration',
