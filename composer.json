@@ -226,6 +226,7 @@
             "@custom-framework-autoloaded-suite"
         ],
         "test-web-70": [
+            "@codeigniter-22-test",
             "@laravel-42-update",
             "@laravel-42-test",
             "@nette-24-update",
@@ -241,6 +242,7 @@
             "@custom-framework-autoloaded-suite"
         ],
         "test-web-71": [
+            "@codeigniter-22-test",
             "@laravel-42-update",
             "@laravel-42-test",
             "@laravel-57-update",
@@ -270,6 +272,7 @@
             "@custom-framework-autoloaded-suite"
         ],
         "test-web-72": [
+            "@codeigniter-22-test",
             "@laravel-42-update",
             "@laravel-42-test",
             "@laravel-57-update",
@@ -302,6 +305,7 @@
             "@custom-framework-autoloaded-suite"
         ],
         "test-web-73": [
+            "@codeigniter-22-test",
             "@laravel-57-update",
             "@laravel-57-test",
             "@laravel-58-update",
